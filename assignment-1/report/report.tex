@@ -47,9 +47,9 @@
  
 \begin{document}
  
-\title{Exercise X}
+\title{Home Assignment 1}
 \author{Cristian Manuel Abrante Dorta - 888248\\
-ELEC-E8125 - Reinforcement Learning}
+CS-E4650 - Methods of data mining}
 
 \maketitle
 \section{Task 1}
@@ -59,27 +59,8 @@ To cite works, put them in the template.bib file and use~\cite{sutton2018reinfor
 To embed code snippets in the report, you can use the \texttt{pycode} environment.
 
 \begin{pycode}
-for episode_number in range(train_episodes):
-    reward_sum, timesteps = 0, 0
-    done = False
-    # Reset the environment and observe the initial state
-    observation = env.reset()
-
-    # Loop until the episode is over
-    while not done:
-        # Get action from the agent
-        action, action_probabilities = agent.get_action(observation)
-        previous_observation = observation
-
-        # Perform the action on the environment, get new state and reward
-        observation, reward, done, info = env.step(action)
-
-        # Store action's outcome (so that the agent can improve its policy)
-        agent.store_outcome(previous_observation, action_probabilities, action, reward)
-
-        # Draw the frame, if desired
-        if render:
-            env.render()
+def main():
+    print("Hello World")
 \end{pycode}
 
 \section{Question 1}
@@ -88,11 +69,11 @@ If you add a figure, you can refer to it using Figure.~\ref*{fig:fig1}.
 
 \begin{figure}[h] 
 	\centering  % Remember to centre the figure
-    \includegraphics[width=0.9\columnwidth]{img/training.pdf}
+    \includegraphics[width=0.3\columnwidth]{img/training.pdf}
 	\caption{This is a sample figure.}
 	\label{fig:fig1}
 \end{figure}
 
 \bibliographystyle{ieeetr}
-\bibliography{template}  % Modify template with your bibliography name
+\bibliography{bibliography}  % Modify template with your bibliography name
 \end{document}
