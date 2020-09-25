@@ -1,16 +1,11 @@
 # Imports
 import pandas as pd
-from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_samples, silhouette_score
+from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, davies_bouldin_score
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
-
-# pd.set_option('display.max_columns', None)  # or 1000
-# pd.set_option('display.max_rows', None)  # or 1000
-# pd.set_option('display.max_colwidth', 199)  # or 199
 
 DATA_FILE = "assignment-1/data/nba2013_data.csv"
 CATEGORICAL_COLUMNS = ['player', 'pos', 'bref_team_id', 'season', 'season_end']
@@ -26,6 +21,16 @@ def preprocessing(data):
 
     # columns_with_nan = preprocessed_data.columns[preprocessed_data.isna().any()].tolist()
     return preprocessed_data
+
+
+def log_metric(range_n_clusters, metric, metric_name):
+    print(f'--- {metric_name} ---')
+    for i in range(len(range_n_clusters)):
+        print_formatted_metric(metric[i], metric_name, range_n_clusters[i])
+
+
+def print_formatted_metric(metric_value, metric_name, n_clusters):
+    print(f'K = {n_clusters} {metric_name} -> {metric_value}')
 
 
 def plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_values, file_name=None):
@@ -74,27 +79,40 @@ def plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_
         plt.savefig(f'{PLOT_FOLDER}{file_name}')
 
 
-def exercise_1():
+def exercise_1(log_results=True):
     data = pd.read_csv(DATA_FILE)
     data = preprocessing(data)
 
     range_n_clusters = [2, 5, 10]
 
+    silhouette_avgs = []
+    ch_metrics = np.array([])
+    db_metrics = np.array([])
+
     for n_clusters in range_n_clusters:
         km = KMeans(n_clusters=n_clusters, random_state=10)
         labels = km.fit_predict(data)
 
-        # Silhouette average for all samples.
+        # Silhouette analysis
         silhouette_avg = silhouette_score(data, labels)
-        print("K = ", n_clusters, " silhouette average -> ", silhouette_avg)
+        silhouette_avgs = np.append(silhouette_avgs, silhouette_avg)
 
-        # Silhouette score for each sample.
         silhouette_values = silhouette_samples(data, labels)
+        if log_results:
+            plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_values,
+                                   f'silhouette-plot-k-{n_clusters}.png')
 
-        plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_values,
-                               f'silhouette-plot-k-{n_clusters}.png')
+        # Calinski Harabasz analysis
+        ch_metrics = np.append(ch_metrics, calinski_harabasz_score(data, labels))
 
-    plt.show()
+        # davies bouldin analysis
+        db_metrics = np.append(db_metrics, davies_bouldin_score(data, labels))
+
+    if log_results:
+        log_metric(range_n_clusters, silhouette_avgs, "Silhouette score")
+        log_metric(range_n_clusters, ch_metrics, "calinski-harabsz score")
+        log_metric(range_n_clusters, db_metrics, "davies bouldin score")
+        plt.show()
 
 
 if __name__ == '__main__':
