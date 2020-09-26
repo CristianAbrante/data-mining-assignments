@@ -1,7 +1,8 @@
 # Imports
 import pandas as pd
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, davies_bouldin_score
+from scipy.cluster.hierarchy import dendrogram, linkage
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -10,6 +11,8 @@ import numpy as np
 DATA_FILE = "assignment-1/data/nba2013_data.csv"
 CATEGORICAL_COLUMNS = ['player', 'pos', 'bref_team_id', 'season', 'season_end']
 PLOT_FOLDER = "assignment-1/plots/"
+TASK_1_PLOTS = f'{PLOT_FOLDER}/task-1/'
+TASK_2_PLOTS = f'{PLOT_FOLDER}/task-2/'
 
 
 def preprocessing(data):
@@ -30,7 +33,7 @@ def log_metric(range_n_clusters, metric, metric_name):
 
 
 def print_formatted_metric(metric_value, metric_name, n_clusters):
-    print(f'K = {n_clusters} {metric_name} -> {metric_value}')
+    print(f'K = {n_clusters} {metric_name} -> {np.round(metric_value, 4)}')
 
 
 def plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_values, file_name=None):
@@ -76,7 +79,7 @@ def plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_
                   "with k = %d" % n_clusters), fontweight='bold')
 
     if file_name is not None:
-        plt.savefig(f'{PLOT_FOLDER}{file_name}')
+        plt.savefig(f'{TASK_1_PLOTS}{file_name}')
 
 
 def exercise_1(log_results=True):
@@ -115,5 +118,31 @@ def exercise_1(log_results=True):
         plt.show()
 
 
+def plot_dendrogram(model, linkage_metric, file_name=None, **kwargs):
+    fig, ax = plt.subplots()
+    # Create linkage matrix and then plot the dendrogram
+    plt.title(f"Hierarchical clustering Dendogram - metric = {linkage_metric}")
+    dendrogram(model, **kwargs)
+    ax.set_xlabel("Number of points in node (or index of point if no parenthesis).")
+
+    if file_name is not None:
+        plt.savefig(f'{TASK_2_PLOTS}{file_name}')
+
+
+def exercise_2():
+    data = pd.read_csv(DATA_FILE)
+    data = preprocessing(data)
+    linkage_metrics = ['single', 'complete', 'average', 'centroid']
+
+    for linkage_metric in linkage_metrics:
+        X = linkage(data.to_numpy(), linkage_metric)
+
+        # variable for truncate visualization
+        p = 4
+        plot_dendrogram(X, linkage_metric, f"dendogram-{linkage_metric}-p{p}", truncate_mode='level', p=p)
+
+    plt.show()
+
+
 if __name__ == '__main__':
-    exercise_1()
+    exercise_2()
