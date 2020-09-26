@@ -2,7 +2,7 @@
 import pandas as pd
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, davies_bouldin_score
-from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -129,6 +129,19 @@ def plot_dendrogram(model, linkage_metric, file_name=None, **kwargs):
         plt.savefig(f'{TASK_2_PLOTS}{file_name}')
 
 
+def scatterplot_silhouette_scores(silhouette_scores, range_of_clusters, metric, file_name=None):
+    fig, ax = plt.subplots()
+
+    plt.title(f"Average Silhouette score, metric = {metric}")
+    ax.set_xlabel("Number of clusters")
+    ax.set_ylabel("Silhouette score")
+
+    plt.plot(range_of_clusters, silhouette_scores, '-ok')
+
+    if file_name is not None:
+        plt.savefig(f'{TASK_2_PLOTS}{file_name}')
+
+
 def exercise_2():
     data = pd.read_csv(DATA_FILE)
     data = preprocessing(data)
@@ -140,6 +153,21 @@ def exercise_2():
         # variable for truncate visualization
         p = 4
         plot_dendrogram(X, linkage_metric, f"dendogram-{linkage_metric}-p{p}", truncate_mode='level', p=p)
+
+        range_n_clusters = range(2, 11)
+        log_results = True
+
+        silhouette_avgs = np.array([])
+
+        for n_clusters in range_n_clusters:
+            labels = fcluster(X, n_clusters, criterion="maxclust")
+            # Silhouette analysis
+            silhouette_avgs = np.append(silhouette_avgs, silhouette_score(data, labels))
+
+        if log_results:
+            log_metric(range_n_clusters, silhouette_avgs, "Silhouette score")
+            scatterplot_silhouette_scores(silhouette_avgs, range_n_clusters, linkage_metric,
+                                          f"silhouette-{linkage_metric}")
 
     plt.show()
 
