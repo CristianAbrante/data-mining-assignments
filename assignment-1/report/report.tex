@@ -8,6 +8,7 @@
 \usepackage[many]{tcolorbox}
 \tcbuselibrary{listings}
 \usepackage{listings}
+\usepackage{subfig}
 
 \usepackage{float}
 \definecolor{lg}{HTML}{f0f0f0}
@@ -86,19 +87,19 @@ The silhouette score indicates how each data point is close to the cluster it wa
 \begin{figure}[H]
    \begin{minipage}{0.32\textwidth}
      \centering
-     \includegraphics[width=\linewidth]{assignment-1/plots/silhouette-plot-k-2.png}
+     \includegraphics[width=\linewidth]{assignment-1/plots/task-1/silhouette-plot-k-2.png}
      \caption{$K = 2$}
      \label{fig:sil-k-2}
    \end{minipage}\hfill
    \begin{minipage}{0.32\textwidth}
      \centering
-     \includegraphics[width=\linewidth]{assignment-1/plots/silhouette-plot-k-5.png}
+     \includegraphics[width=\linewidth]{assignment-1/plots/task-1/silhouette-plot-k-5.png}
      \caption{$K = 5$}
      \label{fig:sil-k-5}
    \end{minipage}
    \begin{minipage}{0.32\textwidth}
      \centering
-     \includegraphics[width=\linewidth]{assignment-1/plots/silhouette-plot-k-10.png}
+     \includegraphics[width=\linewidth]{assignment-1/plots/task-1/silhouette-plot-k-10.png}
      \caption{$K=10$}
      \label{fig:sil-k-10}
    \end{minipage}
@@ -132,13 +133,29 @@ We can also add that, even though the value of $K=2$ is the one which offers the
 
 \subsection{Perform hierarchical agglomerative clustering using different linkage metrics}
 
-S
+We have performed hierarchical clustering to the dataset using different linkage metrics. For each metric, a dendogram was generated for showing how data is going to be grouped. Each dendogram is cut in the fourth level, for creating a clearer visualization. 
 
+\begin{figure} [H]
+\centering
+\subfloat[Single-linkage metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/dendogram-single-p4.png}
+}
+\subfloat[Complete-linkage metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/dendogram-complete-p4.png}
+}
+\hspace{0mm}
+\subfloat[Average-linkage metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/dendogram-average-p4.png}
+}
+\subfloat[Distance of centroids metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/dendogram-centroid-p4.png}
+}
+\hspace{0mm}
+\caption{Dendograms of the resulting clustering for the four metrics}
+\label{fig:hierarchical-clusters}
+\end{figure}
 
-
-
-
-
+\subsection{What is the optimal metric for this data and why?}
 
 
 
