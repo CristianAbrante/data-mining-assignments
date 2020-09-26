@@ -136,7 +136,11 @@ def scatterplot_silhouette_scores(silhouette_scores, range_of_clusters, metric, 
     ax.set_xlabel("Number of clusters")
     ax.set_ylabel("Silhouette score")
 
-    plt.plot(range_of_clusters, silhouette_scores, '-ok')
+    ax.plot(range_of_clusters, silhouette_scores, '-ok')
+
+    avg_silhouette = np.mean(silhouette_scores)
+    ax.hlines(avg_silhouette, xmin=range_of_clusters[0], xmax=range_of_clusters[-1], color='r')
+    ax.text(x=range_of_clusters[-1] + 0.5, y=avg_silhouette - 0.001, s=str(np.round(avg_silhouette, 3)))
 
     if file_name is not None:
         plt.savefig(f'{TASK_2_PLOTS}{file_name}')
