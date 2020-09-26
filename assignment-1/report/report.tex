@@ -134,7 +134,7 @@ We can also add that, even though the value of $K=2$ is the one which offers the
 
 \subsection{Perform hierarchical agglomerative clustering using different linkage metrics}
 
-We have performed hierarchical clustering to the dataset using different linkage metrics. For each metric, a dendogram was generated for showing how data is going to be grouped. Each dendogram is cut in the fourth level, for creating a clearer visualization. 
+We have performed hierarchical clustering to the dataset using different linkage metrics. For each metric, a dendrogram was generated for showing how data is going to be grouped. Each dendogram is cut in the fourth level, for creating a clearer visualization. 
 
 \begin{figure} [H]
 \centering
@@ -158,13 +158,33 @@ We have performed hierarchical clustering to the dataset using different linkage
 
 \subsection{What is the optimal metric for this data and why?}
 
-As in Section \ref{sec:optimal-k}, we have to select which is the algorithm (in this case which is the linkage metric), that perform best for our dataset. We have explored in previous sections three different indices for doing that: Silhouette, Calinski-Haranasz and Davies-Bouldin. To keep things simple, we are going to use in this case the Silhouette index for measure the goodness of the cluster algorithm with different linkage metrics.
+As in Section \ref{sec:optimal-k}, we have to select which is the algorithm (in this case which is the linkage metric), that performs best for our dataset. We have explored in previous sections three different indices for doing that: silhouette, Calinski-Haranasz, and Davies-Bouldin. To keep things simple, we are going to use in this case the Silhouette index for measuring the goodness of the clustering algorithm with different linkage metrics.
 
+\begin{figure} [H]
+\centering
+\subfloat[Single-linkage metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/silhouette-single.png}
+}
+\subfloat[Complete-linkage metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/silhouette-complete.png}
+}
+\hspace{0mm}
+\subfloat[Average-linkage metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/silhouette-average.png}
+}
+\subfloat[Distance of centroids metric]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-2/silhouette-centroid.png}
+}
+\hspace{0mm}
+\caption{Plot of the silhouette score for 1 to 10 clusters, for each of the metrics.}
+\label{fig:sil-hierarchical}
+\end{figure}
 
+In figure \ref{fig:sil-hierarchical} we have created a plot of the performance of the hierarchical cluster algorithm according to silhouette score, with different linkage metrics. Additionally, we have plotted a horizontal line with the average value for all the clusters.\\
 
+According to that, we can say that the metric that has the worst performance is the single metric, with an average score of 0.179, obtaining really bad results when the number of clusters is bigger than 3. With the other metrics, we obtain bigger values (around 0.4), obtaining the best of all them with the average linkage value of 0.428.\\ 
 
-
-
+We can not say roundly that this is the best metric, because the other values are really close, but additionally, to have the best result in the metric, we can say that the plot is the most \textit{interpretable} of all of them, because the shape has fewer variations when the number of clusters varies.
 
 
 \section{Task 2}
