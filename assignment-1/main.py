@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, davies_bouldin_score
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
+from sklearn.utils import shuffle
 
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -13,6 +14,7 @@ CATEGORICAL_COLUMNS = ['player', 'pos', 'bref_team_id', 'season', 'season_end']
 PLOT_FOLDER = "assignment-1/plots/"
 TASK_1_PLOTS = f'{PLOT_FOLDER}/task-1/'
 TASK_2_PLOTS = f'{PLOT_FOLDER}/task-2/'
+TASK_3_PLOTS = f'{PLOT_FOLDER}/task-3/'
 
 
 def preprocessing(data):
@@ -36,7 +38,7 @@ def print_formatted_metric(metric_value, metric_name, n_clusters):
     print(f'K = {n_clusters} {metric_name} -> {np.round(metric_value, 4)}')
 
 
-def plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_values, file_name=None):
+def plot_cumulative_silhouette(data, labels, silhouette_values, n_clusters, silhouette_avg=None, file_name=None):
     fig, ax = plt.subplots()
     # Set limits for printing the silhouette.
     ax.set_xlim(-0.2, 1)
@@ -68,8 +70,9 @@ def plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_
     ax.set_ylabel("Cluster label")
 
     # The vertical line for average silhouette score of all the values
-    ax.axvline(x=silhouette_avg, color="red", linestyle="--")
-    ax.text(silhouette_avg - 0.03, ylim + 5, str(np.round(silhouette_avg, 2)))
+    if silhouette_avg:
+        ax.axvline(x=silhouette_avg, color="red", linestyle="--")
+        ax.text(silhouette_avg - 0.03, ylim + 5, str(np.round(silhouette_avg, 2)))
 
     # Ticks for x and y axes
     ax.set_yticks([])  # Clear the yaxis labels / ticks
@@ -102,8 +105,8 @@ def exercise_1(log_results=True):
 
         silhouette_values = silhouette_samples(data, labels)
         if log_results:
-            plot_silhouette_scores(n_clusters, data, labels, silhouette_avg, silhouette_values,
-                                   f'silhouette-plot-k-{n_clusters}.png')
+            plot_cumulative_silhouette(data, labels, silhouette_values, n_clusters,
+                                       f'silhouette-plot-k-{n_clusters}.png')
 
         # Calinski Harabasz analysis
         ch_metrics = np.append(ch_metrics, calinski_harabasz_score(data, labels))
@@ -126,10 +129,10 @@ def plot_dendrogram(model, linkage_metric, file_name=None, **kwargs):
     ax.set_xlabel("Number of points in node (or index of point if no parenthesis).")
 
     if file_name is not None:
-        plt.savefig(f'{TASK_2_PLOTS}{file_name}')
+        plt.savefig(f'{file_name}')
 
 
-def scatterplot_silhouette_scores(silhouette_scores, range_of_clusters, metric, file_name=None):
+def plot_silhouette(silhouette_scores, range_of_clusters, metric, file_name=None):
     fig, ax = plt.subplots()
 
     plt.title(f"Average Silhouette score, metric = {metric}")
@@ -156,7 +159,8 @@ def exercise_2():
 
         # variable for truncate visualization
         p = 4
-        plot_dendrogram(X, linkage_metric, f"dendogram-{linkage_metric}-p{p}", truncate_mode='level', p=p)
+        plot_dendrogram(X, linkage_metric, f"{TASK_2_PLOTS}/dendogram-{linkage_metric}-p{p}", truncate_mode='level',
+                        p=p)
 
         range_n_clusters = range(2, 11)
         log_results = True
@@ -170,8 +174,71 @@ def exercise_2():
 
         if log_results:
             log_metric(range_n_clusters, silhouette_avgs, "Silhouette score")
-            scatterplot_silhouette_scores(silhouette_avgs, range_n_clusters, linkage_metric,
-                                          f"silhouette-{linkage_metric}")
+            plot_silhouette(silhouette_avgs, range_n_clusters, linkage_metric,
+                            f"silhouette-{linkage_metric}")
+
+    plt.show()
+
+
+def perform_clustering_with_metrics(data, params, clustering_performer, metrics):
+    silhouette_avgs = np.array([])
+    silhouette_values = np.array([])
+    ch_metrics = np.array([])
+    db_metrics = np.array([])
+
+    for param in params:
+        data_s = shuffle(data, random_state=10)
+        labels = clustering_performer(data_s, param)
+
+        if 'silhouette' in metrics:
+            silhouette_avgs = np.append(silhouette_avgs, silhouette_score(data_s, labels))
+            silhouette_values = np.append(silhouette_values, silhouette_samples(data_s, labels))
+
+        if 'calinski-harabasz' in metrics:
+            ch_metrics = np.append(ch_metrics, calinski_harabasz_score(data_s, labels))
+        if 'davies-bouldin' in metrics:
+            db_metrics = np.append(db_metrics, davies_bouldin_score(data_s, labels))
+
+    return silhouette_avgs, silhouette_values, ch_metrics, db_metrics
+
+
+def plot_shuffle_and_silhouette(silhouette_values, number_of_shuffles, metric, file_name=None):
+    fig, ax = plt.subplots()
+
+    plt.title(f"Average Silhouette score in {len(silhouette_values)} clusters, metric = {metric}")
+    ax.set_xlabel("Shuffling execution")
+    ax.set_ylabel("Silhouette score")
+
+    ax.plot(range(number_of_shuffles), silhouette_values, '-ok')
+
+    avg_silhouette = np.mean(silhouette_values)
+    ax.hlines(avg_silhouette, xmin=0, xmax=number_of_shuffles - 1, color='r')
+    ax.text(x=number_of_shuffles - 1 + 0.25, y=avg_silhouette, s=str(np.round(avg_silhouette, 3)))
+
+    if file_name is not None:
+        plt.savefig(f'{TASK_2_PLOTS}{file_name}')
+
+
+def hierarchical_cluster(data, n_clusters, linkage_metric):
+    X = linkage(data.to_numpy(), linkage_metric)
+    return fcluster(X, n_clusters, criterion="maxclust")
+
+
+def exercise_3():
+    data = pd.read_csv(DATA_FILE)
+    data = preprocessing(data)
+
+    linkage_metrics = ['single', 'complete', 'average']
+    times_to_shuffle = 5
+
+    for linkage_metric in linkage_metrics:
+        for i in range(times_to_shuffle):
+            data = shuffle(data, random_state=10)
+            X = linkage(data.to_numpy(), linkage_metric)
+            # variable for truncate visualization
+            p = 4
+            plot_dendrogram(X, linkage_metric, f"{TASK_3_PLOTS}dendogram-{linkage_metric}-{i}", truncate_mode='level',
+                            p=p)
 
     plt.show()
 
