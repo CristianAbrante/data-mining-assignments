@@ -330,25 +330,276 @@ We know that the values of $d$ always hold the equation because it is the euclid
 
 But the characteristic of the overlapping measures does not allow that, because it is impossible that $o_{xy}=1$ and $0_{yz}=1$, it means that all the categorical values are the same between $x$ and $y$ and between $y$ and $z$, and then the categorical variables between $x$ and $z$ would be different, and thus the value will be different to 1. This happens because the number of variables is supposed to be the same for each data point.
 
-\section{Task 2}
-To embed code snippets in the report, you can use the \texttt{pycode} environment.
+\section{Task 5}
 
-\begin{pycode}
-def main():
-    print("Hello World")
-\end{pycode}
+\subsection{ Carry out the principal component analysis of these data, that is, compute the eigenvalue decomposition of the corresponding sample covariance matrix.}
 
-\section{Question 1}
+For computing the eigenvalues decomposition of the covariance matrix we have to follow some steps:
 
-If you add a figure, you can refer to it using Figure.~\ref*{fig:fig1}.
+\begin{enumerate}
+    \item \textbf{Standardize data}: \\
+    Standarization means that the mean ($\mu=0$) and standard deviation ($\sigma=1$), for each feature column. For doing that we have followed the equation:
+    \begin{equation}
+        x_s^i = \frac{x^i - \mu_x^1}{\sigma_x}
+    \end{equation}
+    Before doing that we have to compute the average for column 1 ($\mu^1=\frac{1}{2}$) and for column 2 ($\mu^2=2$), and also the standard deviation for column 1 ($\sigma^1 = \sqrt{\frac{5}{8}}$) and for column 2 ($\sigma^1 = \sqrt{\frac{5}{8}}$). The standardized matrix then is:
+    \begin{equation}
+    X =
+        \begin{pmatrix}
+         -\frac{\sqrt{10}}{5} & -\frac{2\sqrt{10}}{5} \\
+         -\frac{2\sqrt{10}}{5} & -\frac{\sqrt{10}}{5} \\
+         \frac{2\sqrt{10}}{5} & \frac{\sqrt{10}}{5} \\
+         \frac{\sqrt{10}}{5} & \frac{2\sqrt{10}}{5} \\
+        \end{pmatrix}
+    \end{equation}
+    
+    \item \textbf{Calculate covariance matrix}\\
+    As we have previously standardized the values, we can compute the covariance matrix, in a simple way, following this formula:
+    \begin{equation}
+        cov = \frac{1}{n-1}X^TX
+    \end{equation}
+    This gives us the following covariance matrix as result:
+    \begin{equation}
+    cov =
+        \begin{pmatrix}
+         \frac{4}{3} & \frac{16}{15} \\
+          \frac{16}{15} &\frac{4}{3} \\
+        \end{pmatrix}
+    \end{equation}
+    \item \textbf{Compute eigenvalues}      
+    For computing the eigenvalues of the matrix, we have to compute the following matrix first:
+    \begin{equation}
+        X - \lambda I
+    \end{equation}
+    Where, $\lambda$ is going to be the eigenvalues of the matrix. In our case:
+    \begin{equation}
+        X - \lambda I =
+        \begin{pmatrix}
+         \frac{4}{3} - \lambda & \frac{16}{15} \\
+          \frac{16}{15} &\frac{4}{3} - \lambda \\
+        \end{pmatrix}
+    \end{equation}
+    After that, we should compute the determinant of the matrix:
+    \begin{equation}
+        det(X - \lambda I) = det\begin{pmatrix}
+         \frac{4}{3} - \lambda & \frac{16}{15} \\
+          \frac{16}{15} &\frac{4}{3} - \lambda \\
+        \end{pmatrix} = (\frac{4}{13}-\lambda)^2-(\frac{16}{15})^2
+        =\lambda^2-\frac{8}{3}\lambda+\frac{16}{25}
+    \end{equation}
+    We then calculate the values of $\lambda$ that solve the equation, and those values are going to be the eigenvalues of the matrix.
+    \begin{equation}
+        \lambda^2-\frac{8}{3}\lambda+\frac{16}{25}=0
+    \end{equation}
+    The solutions are $\lambda_1 = \frac{12}{5}=2.4$ and $\lambda_2=\frac{4}{15}=0.2666$
+    
+    \item \textbf{Compute the corresponding eigenvectors}:\\
+    
+    We compute the corresponding eigenvectors for each eigenvalue:
+    \begin{itemize}
+        \item \textbf{$\lambda_1=\frac{12}{5}$}:\\
+        The corresponding eigenvector should satisfy:
+        \begin{equation}
+            \begin{pmatrix}
+             \frac{4}{3} & \frac{16}{15} \\
+              \frac{16}{15} &\frac{4}{3} \\
+            \end{pmatrix}
+            \begin{pmatrix}
+                x_1 \\ x_2
+            \end{pmatrix} = \frac{12}{5}
+            \begin{pmatrix}
+                x_1 \\ x_2
+            \end{pmatrix}
+        \end{equation}
+        If n the equation mode, the value that we should solve is:
+        \begin{equation}
+            \begin{split}
+                \frac{8}{15}x_1+\frac{16}{15}x_2=0 \\
+                \frac{16}{15}x_1+\frac{8}{15}x_2=0
+            \end{split}
+        \end{equation}
+        Which gives as a result the solution of $x_1=x_2$, which we can consider $k$, for simplifying. It is desirable to have a normalized value, so it has to satisfy:
+        \begin{equation}
+            k^2+k^2=1
+        \end{equation}
+        So then the value of $k=\frac{\sqrt{2}}{2}$, and the corresponding eigenvector $v_1=\begin{pmatrix}\frac{\sqrt{2}}{2} \\ \frac{\sqrt{2}}{2}\end{pmatrix}$
+        \item \textbf{$\lambda_2=\frac{4}{15}$}:\\
+        The corresponding eigenvector should satisfy:
+        \begin{equation}
+            \begin{pmatrix}
+             \frac{4}{3} & \frac{16}{15} \\
+              \frac{16}{15} &\frac{4}{3} \\
+            \end{pmatrix}
+            \begin{pmatrix}
+                x_1 \\ x_2
+            \end{pmatrix} = \frac{4}{15}
+            \begin{pmatrix}
+                x_1 \\ x_2
+            \end{pmatrix}
+        \end{equation}
+        If n the equation mode, the value that we should solve is:
+        \begin{equation}
+            \begin{split}
+                \frac{16}{15}x_1+\frac{16}{15}x_2=0 \\
+                \frac{16}{15}x_1+\frac{16}{15}x_2=0
+            \end{split}
+        \end{equation}
+        Which gives as a result the solution of $x_1=-x_2$, which we can consider $k$, for simplifying. It is desirable to have a normalized value, so it has to satisfy:
+        \begin{equation}
+            k^2+k^2=1
+        \end{equation}
+        So then the value of $k=\frac{\sqrt{2}}{2}$, and the corresponding eigenvector $v_1=\begin{pmatrix}-\frac{\sqrt{2}}{2} \\ \frac{\sqrt{2}}{2}\end{pmatrix}$
+    \end{itemize}
+    
+    
+\end{enumerate}
 
-\begin{figure}[h] 
-	\centering  % Remember to centre the figure
-    \includegraphics[width=0.3\columnwidth]{img/training.pdf}
-	\caption{This is a sample figure.}
-	\label{fig:fig1}
-\end{figure}
+\subsection{Consider the resulting decomposition:}
 
-\bibliographystyle{ieeetr}
-\bibliography{bibliography}  % Modify template with your bibliography name
+\subsubsection{Use it to transform the original 2-dimensional data set into a 1-dimensional representation (a 4 × 1 matrix) such that the variance of the resulting data is equal to the largest eigenvalue.}
+
+We can use the eigenvector corresponding to the bigger eigenvalue ($\lambda_1=\frac{12}{5}$), to transform the original standardized data in order to preserve the maximum amount of variance possible:
+
+\begin{equation}
+    X \begin{pmatrix} \frac{\sqrt{2}}{2} \\ \frac{\sqrt{2}}{2}\end{pmatrix} = 
+    \begin{pmatrix}
+        -\frac{3\sqrt{5}}{5} \\
+        -\frac{3\sqrt{5}}{5} \\
+        \frac{3\sqrt{5}}{5} \\
+        \frac{3\sqrt{5}}{5}
+    \end{pmatrix}
+\end{equation}
+
+If we calculate the variance we can see that $\sigma=\frac{12}{5}$, corresponding to the biggest eigenvalue.
+
+\subsubsection{Next, use it to transform the original data set into a 2-dimensional representation, such that the variance of one of the columns is equal to the smallest eigenvalue.}
+
+For doing this transformation ,we multiply the original data with the two obtained eigenvectors, obtaining as a result a 4x1 matrix, where the second column has as variance the value of the smallest eigenvalue:
+
+\begin{equation}
+    X 
+    \begin{pmatrix} 
+        \frac{\sqrt{2}}{2} & -\frac{\sqrt{2}}{2} \\ 
+        \frac{\sqrt{2}}{2} & \frac{\sqrt{2}}{2}
+    \end{pmatrix} 
+    = 
+    \begin{pmatrix}
+        -\frac{3\sqrt{5}}{5} & -\frac{\sqrt{5}}{5} \\
+        -\frac{3\sqrt{5}}{5} & \frac{\sqrt{5}}{5}  \\
+        \frac{3\sqrt{5}}{5}  & -\frac{\sqrt{5}}{5} \\
+        \frac{3\sqrt{5}}{5}  & \frac{\sqrt{5}}{5}
+    \end{pmatrix}
+\end{equation}
+
+\subsection{Given two points in $d$-dimensional Euclidean space}:
+
+\subsubsection{Compute the Euclidean distance between all pairs of points in the original data set.}
+
+We can represent those distances in a matrix where each row and column are a certain point, and the positions ($i$, $j$) is the distance between $p_i$ and $p_j$:
+
+\begin{equation}
+    \begin{matrix}
+        0.0 & 0.8944 & 2.6832 & 2.8284 \\
+        0.8944 & 0.0 & 2.8284 & 2.6832 \\
+        2.6832 & 2.8284 &  0.0 & 0.8944 \\
+        2.8284 & 2.6832 &  0.8944 & 0.0    
+    \end{matrix}
+\end{equation}
+
+As we can see this is a simetric matrix, because Euclidean distance is a metric.
+
+\subsubsection{Compute the Euclidean distance between all pairs of points in the 1-dimensional representation obtained in exercise 5b.}
+
+\begin{equation}
+    \begin{matrix}
+        0.0 & 0.0 & 2.6832 & 2.6832 \\
+        0.0 & 0.0 & 2.6832 & 2.6832 \\
+        2.6832 & 2.6832 &  0.0 & 0.0 \\
+        2.6832 & 2.6832 &  0.0 & 0.0    
+    \end{matrix}
+\end{equation}
+
+\subsubsection{Compute the Euclidean distance between all pairs of points in the 2-dimensional representation obtained in exercise 5b.}
+
+\begin{equation}
+    \begin{matrix}
+        0.0 & 0.8944 & 2.6832 & 2.8284 \\
+        0.8944 & 0.0 & 2.8284 & 2.6832 \\
+        2.6832 & 2.8284 &  0.0 & 0.8944 \\
+        2.8284 & 2.6832 &  0.8944 & 0.0    
+    \end{matrix}
+\end{equation}
+
+\subsubsection{What is the effect of the previous transformations on these distances?}
+
+We can see that the distance between data points does not differ between the original data and the second transformation. That makes sense, because we are not modifying the distances between the data points, but only changing the axis to where they refer to. \\
+
+Also we can see that in the second transformation some distances are lost, and that is also reasonable because as we are making a projection over the eigenvector, so we are losing some information. 
+
+\subsection{Repeat exercises 5a and 5b on these data.}
+
+We are going to copy the same steps as in the previous sections:
+\begin{enumerate}
+    \item \textbf{Standardize data}: \\
+    Standarized data is:
+    
+    \begin{equation}
+    X =
+        \begin{pmatrix}
+         -1 & -1 \\
+         -1 & 1 \\
+         1 & -1 \\
+         1 & 1 \\
+        \end{pmatrix}
+    \end{equation}
+    
+    \item \textbf{Calculate covariance matrix}\\
+   
+    This gives us the following covariance matrix as result:
+    \begin{equation}
+    cov =
+        \begin{pmatrix}
+         1.33 & 0.0 \\
+         0.0 & 1.33 \\
+        \end{pmatrix}
+    \end{equation}
+    \item \textbf{Compute eigenvalues}      
+    For computing the eigenvalues of the matrix, we have to compute the following matrix first:
+    \begin{equation}
+        X - \lambda I
+    \end{equation}
+    Where, $\lambda$ is going to be the eigenvalues of the matrix. In our case:
+    \begin{equation}
+        X - \lambda I =
+        \begin{pmatrix}
+         1.33 - \lambda & 0 \\
+          0 &1.33 - \lambda \\
+        \end{pmatrix}
+    \end{equation}
+    After that, we should compute the determinant of the matrix:
+    \begin{equation}
+        det(X - \lambda I) = det\begin{pmatrix}
+         1.33 - \lambda & 0 \\
+          0 &1.33 - \lambda \\
+        \end{pmatrix}
+    \end{equation}
+
+    The solutions are $\lambda_1 = 1.33$ and $\lambda_2=1.33$
+    
+    \item \textbf{Compute the corresponding eigenvectors}:\\
+    
+    We compute the corresponding eigenvectors for each eigenvalue:
+    \begin{itemize}
+        \item \textbf{$\lambda_1=1.33$}:\\
+        
+        The corresponding eigenvector $v_1=\begin{pmatrix}1 \\ 0\end{pmatrix}$
+        \item \textbf{$\lambda_1=1.33$}:\\
+        
+        The corresponding eigenvector $v_1=\begin{pmatrix}0 \\ 1\end{pmatrix}$
+    \end{itemize}
+    
+    
+\end{enumerate}
+
+
 \end{document}
