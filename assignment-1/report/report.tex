@@ -231,6 +231,28 @@ When compared different metrics between each other we can see that there are met
 
 Apart from observing the dendrograms, we can observe the different indices for measuring the quality of the cluster. In the experiment, the average value for all the metric does not change over the executions, which suggest that metrics does not vary depending on the position of the elements in the dataset.
 
+\section{Task 4}
+
+\subsection{Scale the numerical features as needed and calculate pairwise distances using only numerical features.}
+
+The scale of numerical features have been performed using the min max-scale, so all the values have been reescaled to interval $[0-1]$.After that, the similarity graph was calculated, using euclidean distance (Figure \ref{fig:eucl-graph}):
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{assignment-1/plots/task-4/task-4-a-1.png}
+    \caption{Similarity graph using euclidean distance.}
+    \label{fig:eucl-graph}
+\end{figure}
+
+Also, it was calculated using the Mahalanobis distance (Figure \ref{fig:maha-graph}):
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{assignment-1/plots/task-4/task-4-a-2.png}
+    \caption{Similarity graph using Mahalanobis distance.}
+    \label{fig:maha-graph}
+\end{figure}
+
 \section{Task 2}
 To embed code snippets in the report, you can use the \texttt{pycode} environment.
 
