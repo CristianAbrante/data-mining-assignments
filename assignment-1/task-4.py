@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist, euclidean
 
 DATA_FILE = "data/cows.csv"
 CATEGORICAL_COLUMNS = ['name', 'race', 'character', 'music']
@@ -49,6 +49,39 @@ def goodall_distance(probs, features_a, features_b):
     return goodall_score / len(features_a)
 
 
+def overlap_measure(features_a, features_b):
+    overlap = 0
+    k = len(features_a)
+    for i in range(k):
+        if features_a[i] == features_b[i]:
+            overlap += 1
+    return overlap / k
+
+
+def combined_similarity(categorical_positions, numerical_positions, lambda_val, features_a, features_b):
+    a_categorical = [features_a[i] for i in categorical_positions]
+    a_numerical = [features_a[i] for i in numerical_positions]
+    b_categorical = [features_b[i] for i in categorical_positions]
+    b_numerical = [features_b[i] for i in numerical_positions]
+
+    euclidean_val = euclidean(a_numerical, b_numerical)
+    overlap_val = overlap_measure(a_categorical, b_categorical)
+
+    return lambda_val * (1.0 / (1.0 + euclidean_val)) + (1 - lambda_val) * overlap_val
+
+
+def combined_distance(categorical_positions, numerical_positions, lambda_val, features_a, features_b):
+    a_categorical = [features_a[i] for i in categorical_positions]
+    a_numerical = [features_a[i] for i in numerical_positions]
+    b_categorical = [features_b[i] for i in categorical_positions]
+    b_numerical = [features_b[i] for i in numerical_positions]
+
+    euclidean_val = euclidean(a_numerical, b_numerical)
+    overlap_val = overlap_measure(a_categorical, b_categorical)
+
+    return lambda_val * euclidean_val + (1 - lambda_val) * (1 - overlap_val)
+
+
 def main():
     data = pd.read_csv(DATA_FILE)
 
@@ -60,10 +93,10 @@ def main():
 
     print("-- Euclidean distance --")
     distances = pairwise_distances(data_for_calculations, metric="euclidean")
-    print_distances(data, distances, "euclidean")
+    print_distances(data, distances)
     print("-- Mahalanobis distance --")
     distances = pairwise_distances(data_for_calculations, metric="mahalanobis")
-    print_distances(data, distances, "mahalanobis")
+    print_distances(data, distances)
 
     # Exercise b
     print("-- Goodall distance --")
@@ -73,6 +106,54 @@ def main():
     distance_calculator = lambda features_a, features_b: goodall_distance(propbs, features_a, features_b)
     distances = cdist(data_for_calculations, data_for_calculations, metric=distance_calculator)
     print_distances(data, distances, similarity=True)
+
+    # Exercise c
+    print("-- Combined measure --")
+    scaler = MinMaxScaler()
+    data_for_calculations = data
+
+    numerical_columns = data.columns.difference(CATEGORICAL_COLUMNS)
+
+    # Min max scaling numerical values
+    for col in numerical_columns:
+        data_for_calculations[col] = pd.DataFrame(scaler.fit_transform(pd.DataFrame(data_for_calculations[col])),
+                                                  columns=[col])
+
+    lambda_value = (data.shape[1] - len(CATEGORICAL_COLUMNS)) / data.shape[1]
+    categorical_positions = [data.columns.get_loc(c) for c in CATEGORICAL_COLUMNS if c in data]
+    numerical_positions = [data.columns.get_loc(c) for c in numerical_columns if c in data]
+
+    calculator = lambda features_a, features_b: combined_similarity(categorical_positions, numerical_positions,
+                                                                    lambda_value, features_a,
+                                                                    features_b)
+
+    distances = cdist(data_for_calculations, data_for_calculations, metric=calculator)
+    print(distances)
+    print_distances(data, distances, similarity=True)
+
+    # Exercise d
+    print("-- Combined measure (distance) --")
+    scaler = MinMaxScaler()
+    data_for_calculations = data
+
+    numerical_columns = data.columns.difference(CATEGORICAL_COLUMNS)
+
+    # Min max scaling numerical values
+    for col in numerical_columns:
+        data_for_calculations[col] = pd.DataFrame(scaler.fit_transform(pd.DataFrame(data_for_calculations[col])),
+                                                  columns=[col])
+
+    lambda_value = (data.shape[1] - len(CATEGORICAL_COLUMNS)) / data.shape[1]
+    categorical_positions = [data.columns.get_loc(c) for c in CATEGORICAL_COLUMNS if c in data]
+    numerical_positions = [data.columns.get_loc(c) for c in numerical_columns if c in data]
+
+    calculator = lambda features_a, features_b: combined_distance(categorical_positions, numerical_positions,
+                                                                  lambda_value, features_a,
+                                                                  features_b)
+
+    distances = cdist(data_for_calculations, data_for_calculations, metric=calculator)
+    print(distances)
+    print_distances(data, distances)
 
 
 if __name__ == '__main__':
