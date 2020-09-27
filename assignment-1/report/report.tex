@@ -253,6 +253,83 @@ Also, it was calculated using the Mahalanobis distance (Figure \ref{fig:maha-gra
     \label{fig:maha-graph}
 \end{figure}
 
+\subsection{Calculate pairwise similarities using only categorical features. Use
+the Goodall measure.}
+
+Using Goodall measure we have constructed the following similarity graph, connecting the two closest neighbors according to that measure (Figure \ref{fig:goodall-graph})
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{assignment-1/plots/task-4/task-4-a-3.png}
+    \caption{Similarity graph using Goodall measure.}
+    \label{fig:goodall-graph}
+\end{figure}
+
+\subsection{Create a distance or similarity measure that combines the numerical and categorical measures so that neither group dominates.}
+
+The similarity measure created, combines both the overlap similarity for categorical features and the euclidean distance for the numerical values. First of all, a preprocessing was made in the data in order to re-scale the numerical values (\textbf{age} and \textbf{milk/d}) into a $[0 - 1]$ scale. After that, categorical and numerical values were separated for performing the different calculations. The equation of the combined similarity was as it follows:
+
+\begin{equation}
+    s(x, y) = \lambda \cdot (\frac{1}{1 + L_2(x_{num}, y_{num}}) + (1-\lambda)\cdot(o(x_{cat}, y_{cat}))
+    \label{eq:eq-meas}
+\end{equation}
+
+As we can see, the euclidean distance between numerical features ($L_2(x_{num}, y_{num})$), should be modified with a fraction. This is done for converting this distance measure into a similarity measure, and also for re-scaling the value into the same interval as the categorical features. \\
+
+Using this measure of similarity, we calculated the similarity graph, representing the two nearest neighbors for each data point (Figure \ref{fig:combined-graph}):
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.3]{assignment-1/plots/task-4/task-4-a-4.png}
+    \caption{Similarity graph using combined measure.}
+    \label{fig:combined-graph}
+\end{figure}
+
+
+\subsection{ If your combined measure was a similarity measure, present it as a distance measure.}
+
+In equation \ref{eq:eq-meas} was presented the combined similarity measure for categorical and numerical data. With a small modification, it could be created also the measure for distance instead of similarity:
+
+\begin{equation}
+    d(x, y) = \lambda \cdot  L_2(x_{num}, y_{num}) + (1-\lambda)\cdot(1 - o(x_{cat}, y_{cat}))
+    \label{eq:eq-dist}
+\end{equation}
+
+This small change in the overlap measure is correct because it is a scaled value in the interval $[0-1]$, so if all categorical features are the same, this value is going to be 1, so the distance is going to be zero. \\
+
+For proving that this distance is a metric, we have to prove four different elements: \\
+
+\textbf{$d(x, y) \ge 0$}\\
+
+For proving that, we have to know that all elements in the distance are also going to be greater than zero. In the case of the euclidean distance, we know that this happens because all the measures of age and milk are greater than zero. The same happens with the overlapping measure, because in all the cases because it is defined that the minimum value is zero (with no elements in common). \\
+
+\textbf{$d(x, y) = 0$ if and only if $x=y$}\\
+
+In case that $x=y$ we can affirm that $L_2(x, y) = 0$, and $o(x, y) = 1$, so:
+
+\begin{equation}
+    d(x, y) = \lambda \cdot 0 + (1-\lambda) \cdot (1-1); 
+d(x, y) = 0
+\end{equation}
+
+And that not could happen in other cases because if $x \neq y$ then or the euclidean distance is greater than zero (they are not in the same \textit{position}), or there is any categorical value that they do not share, so overlap measure is smaller than $1$. \\
+
+\textbf{$d(x, y) = d(y, x)$}\\
+
+We can prove that because we know that Euclidean distance is symmetrical and also overlapping measure, so the sum of both is going to be also symmetrical. \\
+
+\textbf{$d(x, z) \leq d(y, x) + d(y, z)$}\\
+
+We know that this property is held for the euclidean distance, but we have to prove it for this new metric. Making some abuse of the notation, we can write our expression as it follows:
+
+\begin{equation}
+    \lambda d_{xz} + (1-\lambda)(1-o_{xz}) \leq \lambda d_{xy} + (1-\lambda)(1-o_{xy}) + \lambda d_{yz} + (1-\lambda)(1-o_{yz}) 
+\end{equation}
+
+We know that the values of $d$ always hold the equation because it is the euclidean distance, but we have to take into account the case when the inequality could be broken. This case is when the $o_{xy}=1$ and $o_{yz}=1$, because that means that they are not going to add any extra value to the right part of the equation, so if $o_{xz} \neq 1$ then some value could be added to the left part, and the inequation could be broken. \\
+
+But the characteristic of the overlapping measures does not allow that, because it is impossible that $o_{xy}=1$ and $0_{yz}=1$, it means that all the categorical values are the same between $x$ and $y$ and between $y$ and $z$, and then the categorical variables between $x$ and $z$ would be different, and thus the value will be different to 1. This happens because the number of variables is supposed to be the same for each data point.
+
 \section{Task 2}
 To embed code snippets in the report, you can use the \texttt{pycode} environment.
 
