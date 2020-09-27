@@ -186,6 +186,50 @@ According to that, we can say that the metric that has the worst performance is 
 
 We can not say roundly that this is the best metric, because the other values are really close, but additionally, to have the best result in the metric, we can say that the plot is the most \textit{interpretable} of all of them, because the shape has fewer variations when the number of clusters varies.
 
+\section{Task 3}
+
+For experimenting, the dataset was shuffled five different times. Each time, the clustering algorithm was executed and the graphic representation in the form of a dendrogram was plotted. This was done for each linkage metric,in order to see the changes. In this case, we have plotted the dendrograms for the complete linkage metric (Figure \ref{fig:dendro-complete-linkage}):\\
+
+\begin{figure}[H]
+\centering
+\subfloat[Shuffle 0]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-complete-0.png}
+}
+\subfloat[Shuffle 1]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-complete-1.png}
+}
+\hspace{0mm}
+\subfloat[Shuffle 2]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-complete-3.png}
+}
+\subfloat[Shuffle 3]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-complete-3.png}
+}
+\hspace{0mm}
+\subfloat[Shuffle 4]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-complete-4.png}
+}
+\caption{Dendrogram of different executions with complete linkage metric}
+\label{fig:dendro-complete-linkage}
+\end{figure}
+
+We can see in the dendrogram representation that even that they hold the same structure, there are some changes in the leaf nodes (represented by numbers without parenthesis in the bottom). This is caused by the sensitivity of the metric to the order of the elements in the dataset.\\
+
+When compared different metrics between each other we can see that there are metrics that are more robust to data order (like the complete linkage), and others that are sensitive to small changes, such as the single linkage metric, shown in Figure \ref{fig:dendro-single-linkage}:
+
+\begin{figure}[H]
+\centering
+\subfloat[Shuffle 2]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-single-2.png}
+}
+\subfloat[Shuffle 4]{
+  \includegraphics[width=65mm]{assignment-1/plots/task-3/dendogram-single-4.png}
+}
+\caption{Dendrogram of two different executions with single linkage metric}
+\label{fig:dendro-single-linkage}
+\end{figure}
+
+Apart from observing the dendrograms, we can observe the different indices for measuring the quality of the cluster. In the experiment, the average value for all the metric does not change over the executions, which suggest that metrics does not vary depending on the position of the elements in the dataset.
 
 \section{Task 2}
 To embed code snippets in the report, you can use the \texttt{pycode} environment.
