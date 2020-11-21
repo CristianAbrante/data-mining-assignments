@@ -9,6 +9,7 @@ verify_ssl = true
 pandas = "*"
 scikit-learn = "*"
 matplotlib = "*"
+networkx = "*"
 
 [requires]
 python_version = "3.6"
